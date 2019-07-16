@@ -117,9 +117,9 @@ class GraphModel:
         # load from saved model
         if prev_model:
             self.load_weights(prev_model)
-        is_classification = 'entropy' in self.model.loss
-        monitor = 'val_acc' if is_classification else 'val_mae'
-        mode = 'max' if is_classification else 'min'
+        # is_classification = 'entropy' in self.model.loss
+        # monitor = 'val_acc' if is_classification else 'val_mae'
+        # mode = 'max' if is_classification else 'min'
         dirname = kwargs.pop('dirname', 'callback')
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -130,7 +130,7 @@ class GraphModel:
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
 
         if validation_graphs is not None:
-            filepath = os.path.join(dirname, '%s_{epoch:05d}_{%s:.6f}.hdf5' % (monitor, monitor))
+            # filepath = os.path.join(dirname, '%s_{epoch:05d}_{%s:.6f}.hdf5' % (monitor, monitor))
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
             val_inputs = self.graph_converter.get_flat_data(validation_graphs, validation_targets)
@@ -138,20 +138,20 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
-            callbacks.extend([ReduceLRUponNan(filepath=filepath,
-                                              monitor=monitor,
-                                              mode=mode,
-                                              factor=lr_scaling_factor,
-                                              patience=patience,
-                                              )])
-            callbacks.extend([ModelCheckpointMAE(filepath=filepath,
-                                                 monitor=monitor,
-                                                 mode=mode,
-                                                 save_best_only=True,
-                                                 save_weights_only=False,
-                                                 val_gen=val_generator,
-                                                 steps_per_val=steps_per_val,
-                                                 target_scaler=self.target_scaler)])
+            # callbacks.extend([ReduceLRUponNan(filepath=filepath,
+                                              # monitor=monitor,
+                                              # mode=mode,
+                                              # factor=lr_scaling_factor,
+                                              # patience=patience,
+                                              # )])
+            # callbacks.extend([ModelCheckpointMAE(filepath=filepath,
+                                                 # monitor=monitor,
+                                                 # mode=mode,
+                                                 # save_best_only=True,
+                                                 # save_weights_only=False,
+                                                 # val_gen=val_generator,
+                                                 # steps_per_val=steps_per_val,
+                                                 # target_scaler=self.target_scaler)])
         else:
             val_generator = None
             steps_per_val = None
